@@ -1,0 +1,30 @@
+{
+  "mode": "implement",
+  "objective": "Implement Milestone 1 (M1) of Self-Hosted Agentic Sandbox Orchestration: Pool Manager, in-pod exec agent, Open SWE adapter (samsung_infra.py), state store with CAS/TTLs, and comprehensive integration tests",
+  "acceptance_criteria": [
+    "Pool Manager HTTP service implements POST /v1/sandboxes (idempotent acquire with reconnect/warm/cold), GET /v1/sandboxes/{id}, POST /v1/sandboxes/{id}/exec, and DELETE /v1/sandboxes/{id}",
+    "State store handles /threads/{thread_id} compare-and-swap, /sandboxes/{id} state transitions, and /leases/idle/{id} TTL tracking",
+    "Lightweight in-pod exec agent executes commands with timeout and captures stdout, stderr, exit code",
+    "Open SWE adapter agent/integrations/samsung_infra.py implements BaseSandbox with execute() and derived ls, read, write, edit, glob, grep, registered in SANDBOX_FACTORIES",
+    "Integration tests verify idempotent acquire, concurrent racing creates, command execution, derived file operations, idle timeout lease refresh, and teardown"
+  ],
+  "non_goals": [
+    "Production bare-metal Kubernetes deployment with Kata hardware virtualization (deferred to M4)",
+    "Full eBPF Falco daemonset and Cilium network policies (deferred to M3)",
+    "Harbor registry preloading automation (deferred to M2/M4)"
+  ],
+  "risk": "medium",
+  "budget": "balanced",
+  "allowed_write_scope": [
+    "pkg/",
+    "cmd/",
+    "agent/",
+    "tests/",
+    "go.mod",
+    "go.sum",
+    "Makefile",
+    "README.md",
+    ".gravitas/"
+  ],
+  "verification": "targeted"
+}

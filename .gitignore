@@ -1,0 +1,18 @@
+# Binaries
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test and cache
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs
+*.log
+
+# OS metadata
+.DS_Store

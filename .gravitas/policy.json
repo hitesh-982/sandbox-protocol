@@ -1,0 +1,7 @@
+{
+  "planning": "compact",
+  "context_depth": "dependency",
+  "verification_depth": "impact",
+  "delegation": "none",
+  "reason_codes": ["new-service-architecture", "open-swe-adapter", "multi-language"]
+}
