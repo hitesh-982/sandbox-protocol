@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -19,11 +20,29 @@ func main() {
 	warmCount := flag.Int("warm-count", 2, "Number of pre-provisioned warm sandbox pods")
 	idleTTL := flag.Duration("idle-ttl", 10*time.Minute, "Duration before an idle sandbox is marked idle")
 	deleteAfterStop := flag.Duration("delete-after-stop", 60*time.Minute, "Duration before an idle sandbox is reaped")
+	storeBackend := flag.String("store-backend", "memory", "State store backend: memory or etcd")
+	etcdEndpoints := flag.String("etcd-endpoints", "127.0.0.1:2379", "Comma-separated list of etcd endpoints")
 	flag.Parse()
 
-	log.Printf("[pool-manager] Starting on %s (node: %s, warm: %d)...", *addr, *nodeID, *warmCount)
+	log.Printf("[pool-manager] Starting on %s (node: %s, warm: %d, store: %s)...", *addr, *nodeID, *warmCount, *storeBackend)
 
-	st := store.NewMemoryStore()
+	var st store.Store
+	switch *storeBackend {
+	case "etcd":
+		endpoints := strings.Split(*etcdEndpoints, ",")
+		etcdSt, err := store.NewEtcdStore(store.EtcdConfig{
+			Endpoints: endpoints,
+			KeyPrefix: "/samsung/sandbox",
+		})
+		if err != nil {
+			log.Fatalf("failed to connect to etcd: %v", err)
+		}
+		defer etcdSt.Close()
+		st = etcdSt
+	default:
+		st = store.NewMemoryStore()
+	}
+
 	prov, err := poolmanager.NewLocalProvisioner(*nodeID, *warmCount)
 	if err != nil {
 		log.Fatalf("failed to initialize provisioner: %v", err)
